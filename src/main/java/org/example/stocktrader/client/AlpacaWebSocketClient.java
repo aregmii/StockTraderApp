@@ -8,87 +8,95 @@ import net.jacobpeterson.alpaca.model.endpoint.marketdata.stock.realtime.trade.S
 import net.jacobpeterson.alpaca.websocket.marketdata.MarketDataListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-import java.lang.reflect.Field;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+@Component
 public class AlpacaWebSocketClient {
 
     private final AlpacaAPI alpacaAPI;
+    private final ExecutorService executorService;
     private static final Logger logger = LoggerFactory.getLogger(AlpacaWebSocketClient.class);
 
-    public AlpacaWebSocketClient(AlpacaAPI alpacaAPI) {
+    @Autowired
+    public AlpacaWebSocketClient(AlpacaAPI alpacaAPI, @Value("${alpaca.websocket.threadpool.size}") int threadPoolSize) {
         this.alpacaAPI = alpacaAPI;
-        logger.info("AlpacaWebSocketClient constructor completed.");
+        this.executorService = Executors.newFixedThreadPool(threadPoolSize);
+        logger.info("AlpacaWebSocketClient initialized with thread-pool size: {}", threadPoolSize);
     }
 
     public void connectAndSubscribe(List<String> symbols) {
         try {
-            logger.info("connectAndSubscribe started for symbols: {}", symbols);
-
+            logger.info("Connecting and subscribing to symbols: {}", symbols);
             MarketDataListener marketDataListener = this::handleMarketData;
-
             alpacaAPI.stockMarketDataStreaming().setListener(marketDataListener);
+
             alpacaAPI.stockMarketDataStreaming().subscribeToControl(
                     MarketDataMessageType.SUCCESS,
                     MarketDataMessageType.SUBSCRIPTION,
-                    MarketDataMessageType.ERROR);
+                    MarketDataMessageType.ERROR,
+                    MarketDataMessageType.BAR,
+                    MarketDataMessageType.QUOTE,
+                    MarketDataMessageType.TRADE);
 
             alpacaAPI.stockMarketDataStreaming().connect();
             if (!alpacaAPI.stockMarketDataStreaming().waitForAuthorization(5, TimeUnit.SECONDS)) {
-                logger.error("Websocket authorization failed!");
-                return;
+                throw new IllegalStateException("Websocket authorization failed!");
             }
 
             if (!alpacaAPI.stockMarketDataStreaming().isValid()) {
-                logger.error("Websocket not valid!");
-                return;
+                throw new IllegalStateException("Websocket connection is not valid!");
             }
 
-            logger.info("Websocket successfully connected and authorized.");
+            logger.info("Websocket connected and authorized successfully.");
 
-            // Subscribe to trades, quotes, and bars for the symbols
-            alpacaAPI.stockMarketDataStreaming().subscribe(
-                    new ArrayList<>(symbols), // Trades
-                    new ArrayList<>(symbols), // Quotes
-                    new ArrayList<>(symbols)); // Bars
+            // Subscribe to the specified symbols
+            alpacaAPI.stockMarketDataStreaming().subscribe(symbols, symbols, symbols);
 
             keepWebSocketOpen();
 
         } catch (Exception e) {
-            logger.error("Exception in connectAndSubscribe: ", e);
-        } finally {
-            alpacaAPI.stockMarketDataStreaming().disconnect();
-            logger.info("Websocket disconnected.");
+            logger.error("Error in connectAndSubscribe: ", e);
+            // Implement appropriate error handling/recovery strategy
         }
     }
 
     private void handleMarketData(MarketDataMessageType messageType, Object message) {
-        Instant timestamp = Instant.now();
-        logger.info("Received streaming message with messageType: {}, message: {}, timestamp: {}", messageType, message, timestamp);
+        executorService.submit(() -> processMarketData(messageType, message));
+    }
 
-        switch (messageType) {
-            case BAR:
-                if (message instanceof StockBarMessage) {
-                    handleBarMessage((StockBarMessage) message, timestamp);
-                }
-                break;
-            case TRADE:
-                if (message instanceof StockTradeMessage) {
-                    handleTradeMessage((StockTradeMessage) message, timestamp);
-                }
-                break;
-            case QUOTE:
-                if (message instanceof StockQuoteMessage) {
-                    handleQuoteMessage((StockQuoteMessage) message, timestamp);
-                }
-                break;
-            default:
-                logger.info("[{}] {}: {}", timestamp, messageType.name(), messageToString(message));
-                break;
+    private void processMarketData(MarketDataMessageType messageType, Object message) {
+        try {
+            Instant timestamp = Instant.now();
+            switch (messageType) {
+                case BAR:
+                    if (message instanceof StockBarMessage) {
+                        handleBarMessage((StockBarMessage) message, timestamp);
+                    }
+                    break;
+                case TRADE:
+                    if (message instanceof StockTradeMessage) {
+                        handleTradeMessage((StockTradeMessage) message, timestamp);
+                    }
+                    break;
+                case QUOTE:
+                    if (message instanceof StockQuoteMessage) {
+                        handleQuoteMessage((StockQuoteMessage) message, timestamp);
+                    }
+                    break;
+                default:
+                    logger.info("[{}] Unknown message type: {}", timestamp, messageType);
+            }
+        } catch (Exception e) {
+            logger.error("Error processing market data: ", e);
+            // Decide on a recovery strategy (e.g., logging, alerting, retrying)
         }
     }
 
@@ -109,22 +117,16 @@ public class AlpacaWebSocketClient {
                 quoteMessage.getBidSize(), quoteMessage.getAskSize());
     }
 
-    private static String messageToString(Object message) {
-        StringBuilder result = new StringBuilder();
+    private void keepWebSocketOpen() {
         try {
-            for (Field field : message.getClass().getDeclaredFields()) {
-                field.setAccessible(true);
-                result.append(field.getName()).append(": ").append(field.get(message)).append(", ");
-            }
-        } catch (IllegalAccessException e) {
-            return "Error accessing fields";
-        }
-        return result.length() > 0 ? result.substring(0, result.length() - 2) : "No fields found"; // remove trailing comma and space
-    }
-
-    private void keepWebSocketOpen() throws InterruptedException {
-        while (!Thread.currentThread().isInterrupted()) {
-            TimeUnit.SECONDS.sleep(1);
+            // Keep the WebSocket connection open (adjust time as needed)
+            Thread.sleep(100000);
+        } catch (InterruptedException e) {
+            logger.error("Thread interrupted in keepWebSocketOpen: ", e);
+            Thread.currentThread().interrupt();
+        } finally {
+            alpacaAPI.stockMarketDataStreaming().disconnect();
+            logger.info("Websocket disconnected.");
         }
     }
 }

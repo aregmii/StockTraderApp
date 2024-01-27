@@ -1,19 +1,22 @@
 package org.example.stocktrader.facades;
 
 import org.example.stocktrader.client.AlpacaWebSocketClient;
-import net.jacobpeterson.alpaca.AlpacaAPI;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class StockDataFacade {
 
     private final AlpacaWebSocketClient alpacaWebSocketClient;
 
-    public StockDataFacade(final AlpacaAPI alpacaAPI) {
-        this.alpacaWebSocketClient = new AlpacaWebSocketClient(alpacaAPI);
+    @Autowired
+    public StockDataFacade(AlpacaWebSocketClient alpacaWebSocketClient) {
+        this.alpacaWebSocketClient = alpacaWebSocketClient;
     }
 
-    public void startStreaming(final List<String> symbol) throws InterruptedException {
-        alpacaWebSocketClient.connectAndSubscribe(symbol);
+    public void startStreaming(final List<String> symbols) {
+        alpacaWebSocketClient.connectAndSubscribe(symbols);
     }
 }

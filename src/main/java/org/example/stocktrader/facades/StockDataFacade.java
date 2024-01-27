@@ -1,6 +1,6 @@
 package org.example.stocktrader.facades;
 
-import org.example.stocktrader.client.AlpacaWebSocketClient;
+import org.example.stocktrader.listener.StockDataStreamListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -9,14 +9,14 @@ import java.util.List;
 @Component
 public class StockDataFacade {
 
-    private final AlpacaWebSocketClient alpacaWebSocketClient;
+    private final StockDataStreamListener stockDataStreamListener;
 
     @Autowired
-    public StockDataFacade(AlpacaWebSocketClient alpacaWebSocketClient) {
-        this.alpacaWebSocketClient = alpacaWebSocketClient;
+    public StockDataFacade(final StockDataStreamListener stockDataStreamListener) {
+        this.stockDataStreamListener = stockDataStreamListener;
     }
 
     public void startStreaming(final List<String> symbols) {
-        alpacaWebSocketClient.connectAndSubscribe(symbols);
+        stockDataStreamListener.connectAndSubscribe(symbols);
     }
 }

@@ -10,11 +10,10 @@ import java.util.Arrays;
 
 @SpringBootApplication
 public class StockTraderApplication {
-
     private final StockDataFacade stockDataFacade;
 
     @Autowired
-    public StockTraderApplication(StockDataFacade stockDataFacade) {
+    public StockTraderApplication(final StockDataFacade stockDataFacade) {
         this.stockDataFacade = stockDataFacade;
     }
 

@@ -4,45 +4,37 @@ import net.jacobpeterson.alpaca.AlpacaAPI;
 import net.jacobpeterson.alpaca.model.endpoint.clock.Clock;
 import net.jacobpeterson.alpaca.model.endpoint.marketdata.common.realtime.enums.MarketDataMessageType;
 import net.jacobpeterson.alpaca.model.endpoint.marketdata.stock.realtime.bar.StockBarMessage;
-import net.jacobpeterson.alpaca.model.endpoint.marketdata.stock.realtime.quote.StockQuoteMessage;
-import net.jacobpeterson.alpaca.model.endpoint.marketdata.stock.realtime.trade.StockTradeMessage;
 import net.jacobpeterson.alpaca.websocket.marketdata.MarketDataListener;
 import org.example.stocktrader.handler.StreamInputMessageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.Optional;
+import java.util.concurrent.*;
 
 @Component
 public class StockDataStreamListener {
     private static final Logger logger = LoggerFactory.getLogger(StockDataStreamListener.class);
     private final AlpacaAPI alpacaAPI;
-    private final ExecutorService executorService;
+    private final Executor executorService;
 
-    private final StreamInputMessageHandler<StockBarMessage> barStreamInputMessageHandler;
-    private final StreamInputMessageHandler<StockQuoteMessage> quoteStreamInputMessageHandler;
-    private final StreamInputMessageHandler<StockTradeMessage> tradeStreamInputMessageHandler;
+    @Autowired
+    private List<StreamInputMessageHandler<?>> handlers;
+
     @Autowired
     public StockDataStreamListener(final AlpacaAPI alpacaAPI,
                                    @Value("${alpaca.websocket.threadpool.size}") final int threadPoolSize,
-                                   final StreamInputMessageHandler<StockBarMessage> barStreamInputMessageHandler,
-                                   final StreamInputMessageHandler<StockQuoteMessage> quoteStreamInputMessageHandler,
-                                   final StreamInputMessageHandler<StockTradeMessage> tradeStreamInputMessageHandler) {
+                                   @Qualifier("taskExecutor") final Executor executorService) {
         this.alpacaAPI = alpacaAPI;
-        this.executorService = Executors.newFixedThreadPool(threadPoolSize);
+        this.executorService = executorService;
         logger.info("AlpacaWebSocketClient initialized with thread-pool size: {}", threadPoolSize);
-        this.barStreamInputMessageHandler = barStreamInputMessageHandler;
-        this.quoteStreamInputMessageHandler = quoteStreamInputMessageHandler;
-        this.tradeStreamInputMessageHandler = tradeStreamInputMessageHandler;
     }
 
     public void connectAndSubscribe(final List<String> symbols) {
@@ -63,7 +55,7 @@ public class StockDataStreamListener {
 
         } catch (final Exception e) {
             logger.error("Error in connectAndSubscribe: ", e);
-            // Implement appropriate error handling/recovery strategy
+            //Connection re-attempt strategy.
         }
     }
 
@@ -82,7 +74,7 @@ public class StockDataStreamListener {
                 barMessage.setLow((double) Instant.now().toEpochMilli() - 15); // Mock data
                 barMessage.setTimestamp(ZonedDateTime.now());
                 barMessage.setVolume(1000L); // Mock data
-                barStreamInputMessageHandler.handleStreamInput(barMessage, timestamp);
+
             });
 
             /*
@@ -113,7 +105,7 @@ public class StockDataStreamListener {
 
     private void connectToAlpacaSocketStream(final List<String> symbols) {
         logger.info("Connecting and subscribing to symbols: {}", symbols);
-        MarketDataListener marketDataListener = this::handleMarketData;
+        MarketDataListener marketDataListener = this::processMarketData;
         alpacaAPI.stockMarketDataStreaming().setListener(marketDataListener);
 
         alpacaAPI.stockMarketDataStreaming().subscribeToControl(
@@ -141,31 +133,16 @@ public class StockDataStreamListener {
         keepWebSocketOpen();
     }
 
-    private void handleMarketData(final MarketDataMessageType messageType, final Object message) {
-        executorService.submit(() -> processMarketData(messageType, message));
-    }
-
     private void processMarketData(final MarketDataMessageType messageType, final Object message) {
         try {
             Instant timestamp = Instant.now();
-            switch (messageType) {
-                case BAR:
-                    if (message instanceof StockBarMessage) {
-                        barStreamInputMessageHandler.handleStreamInput((StockBarMessage) message, timestamp);
-                    }
-                    break;
-                case TRADE:
-                    if (message instanceof StockTradeMessage) {
-                        tradeStreamInputMessageHandler.handleStreamInput((StockTradeMessage) message, timestamp);
-                    }
-                    break;
-                case QUOTE:
-                    if (message instanceof StockQuoteMessage) {
-                        quoteStreamInputMessageHandler.handleStreamInput((StockQuoteMessage) message, timestamp);
-                    }
-                    break;
-                default:
-                    logger.info("[{}] Unknown message type: {}", timestamp, messageType);
+            Optional<? extends StreamInputMessageHandler<?>> optionalHandler = handlers.stream()
+                    .filter(h -> h.canHandle(messageType))
+                    .findFirst();
+            if (optionalHandler.isPresent()) {
+                handleStreamInputHelper(optionalHandler.get(), message, timestamp);
+            } else {
+                logger.info("[{}] No handler found for Unknown message type: {}", timestamp, messageType);
             }
         } catch (Exception e) {
             logger.error("Error processing market data: ", e);
@@ -174,6 +151,10 @@ public class StockDataStreamListener {
         }
     }
 
+    private <T> void handleStreamInputHelper(StreamInputMessageHandler<T> handler, Object message, Instant timestamp) {
+        T typedMessage = (T) message;
+        handler.handleStreamInput(typedMessage, timestamp);
+    }
     private void keepWebSocketOpen() {
         try {
             // Keep the WebSocket connection open (adjust time as needed)

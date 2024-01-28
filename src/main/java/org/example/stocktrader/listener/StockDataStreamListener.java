@@ -7,9 +7,7 @@ import net.jacobpeterson.alpaca.model.endpoint.marketdata.stock.realtime.bar.Sto
 import net.jacobpeterson.alpaca.model.endpoint.marketdata.stock.realtime.quote.StockQuoteMessage;
 import net.jacobpeterson.alpaca.model.endpoint.marketdata.stock.realtime.trade.StockTradeMessage;
 import net.jacobpeterson.alpaca.websocket.marketdata.MarketDataListener;
-import org.example.stocktrader.handler.impl.BarStreamInputMessageHandler;
-import org.example.stocktrader.handler.impl.QuoteStreamInputMessageHandler;
-import org.example.stocktrader.handler.impl.TradeStreamInputMessageHandler;
+import org.example.stocktrader.handler.StreamInputMessageHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,15 +28,15 @@ public class StockDataStreamListener {
     private final AlpacaAPI alpacaAPI;
     private final ExecutorService executorService;
 
-    private final BarStreamInputMessageHandler barStreamInputMessageHandler;
-    private final QuoteStreamInputMessageHandler quoteStreamInputMessageHandler;
-    private final TradeStreamInputMessageHandler tradeStreamInputMessageHandler;
-
+    private final StreamInputMessageHandler<StockBarMessage> barStreamInputMessageHandler;
+    private final StreamInputMessageHandler<StockQuoteMessage> quoteStreamInputMessageHandler;
+    private final StreamInputMessageHandler<StockTradeMessage> tradeStreamInputMessageHandler;
     @Autowired
-    public StockDataStreamListener(final AlpacaAPI alpacaAPI, @Value("${alpaca.websocket.threadpool.size}") final int threadPoolSize,
-                                   final BarStreamInputMessageHandler barStreamInputMessageHandler,
-                                   final QuoteStreamInputMessageHandler quoteStreamInputMessageHandler,
-                                   final TradeStreamInputMessageHandler tradeStreamInputMessageHandler) {
+    public StockDataStreamListener(final AlpacaAPI alpacaAPI,
+                                   @Value("${alpaca.websocket.threadpool.size}") final int threadPoolSize,
+                                   final StreamInputMessageHandler<StockBarMessage> barStreamInputMessageHandler,
+                                   final StreamInputMessageHandler<StockQuoteMessage> quoteStreamInputMessageHandler,
+                                   final StreamInputMessageHandler<StockTradeMessage> tradeStreamInputMessageHandler) {
         this.alpacaAPI = alpacaAPI;
         this.executorService = Executors.newFixedThreadPool(threadPoolSize);
         logger.info("AlpacaWebSocketClient initialized with thread-pool size: {}", threadPoolSize);
@@ -52,6 +50,7 @@ public class StockDataStreamListener {
 
             // Check Market Clock
             Clock clock = alpacaAPI.clock().get();
+            logger.info("AlpacaAPI clocl details: {}", clock.toString());
             boolean isMarketOpen = clock.getIsOpen();
 
             if (isMarketOpen) {
@@ -86,6 +85,8 @@ public class StockDataStreamListener {
                 barStreamInputMessageHandler.handleStreamInput(barMessage, timestamp);
             });
 
+            /*
+
             // Mocking a Trade message
             symbols.forEach(symbol -> {
                 StockTradeMessage tradeMessage = new StockTradeMessage();
@@ -104,7 +105,7 @@ public class StockDataStreamListener {
                 quoteMessage.setBidSize(500); // Mock data
                 quoteMessage.setAskSize(500); // Mock data
                 quoteStreamInputMessageHandler.handleStreamInput(quoteMessage, timestamp);
-            });
+            }); */
 
         }, 0, 1, TimeUnit.SECONDS); // Adjust the period to suit your testing needs
     }

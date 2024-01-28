@@ -5,6 +5,8 @@ import org.example.stocktrader.handler.StreamInputMessageHandler;
 import org.example.stocktrader.manager.BarMessageQueueManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -15,11 +17,13 @@ public class BarStreamInputMessageHandler implements StreamInputMessageHandler<S
 
     private  final BarMessageQueueManager barMessageQueueManager;
 
+    @Autowired
     public BarStreamInputMessageHandler(BarMessageQueueManager barMessageQueueManager) {
         this.barMessageQueueManager = barMessageQueueManager;
     }
 
     @Override
+    @Async
     public void handleStreamInput(final StockBarMessage barMessage, final Instant timestamp) {
         logger.info("[{}] Received Bar: Symbol: {}, Open: {}, Close: {}, High: {}, Low: {}, Volume: {}",
                 timestamp, barMessage.getSymbol(), barMessage.getOpen(), barMessage.getClose(),

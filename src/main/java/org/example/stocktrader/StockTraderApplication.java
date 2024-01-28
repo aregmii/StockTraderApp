@@ -4,11 +4,13 @@ import org.example.stocktrader.facades.StockDataFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 import javax.annotation.PostConstruct;
 import java.util.Arrays;
 
 @SpringBootApplication
+@EnableAsync
 public class StockTraderApplication {
     private final StockDataFacade stockDataFacade;
 

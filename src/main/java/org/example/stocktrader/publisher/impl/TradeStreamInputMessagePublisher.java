@@ -1,8 +1,8 @@
-package org.example.stocktrader.handler.impl;
+package org.example.stocktrader.publisher.impl;
 
 import net.jacobpeterson.alpaca.model.endpoint.marketdata.common.realtime.enums.MarketDataMessageType;
 import net.jacobpeterson.alpaca.model.endpoint.marketdata.stock.realtime.trade.StockTradeMessage;
-import org.example.stocktrader.handler.StreamInputMessageHandler;
+import org.example.stocktrader.publisher.StreamInputMessagePublisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 import java.time.Instant;
 
 @Component
-public class TradeStreamInputMessageHandler implements StreamInputMessageHandler<StockTradeMessage> {
-    private static final Logger logger = LoggerFactory.getLogger(TradeStreamInputMessageHandler.class);
+public class TradeStreamInputMessagePublisher implements StreamInputMessagePublisher<StockTradeMessage> {
+    private static final Logger logger = LoggerFactory.getLogger(TradeStreamInputMessagePublisher.class);
 
     @Override
     public void handleStreamInput(StockTradeMessage stockMessage, Instant timestamp) {

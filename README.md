@@ -18,6 +18,28 @@ To run this application, you need to create your own API keys and configure the 
 
 ### Configuration
 
+Sample Config file: 
+```
+
+alpaca.api.key=<alpaca-api-key>
+alpaca.secret.key=<alpaca-secret-key>
+alpaca.websocket.threadpool.size=1
+
+#Threading Config
+threadpool.corePoolSize=10
+threadpool.maxPoolSize=20
+threadpool.queueCapacity=50
+
+#Stock config for user
+
+
+#Stock symbols to subscribe to
+subscription.stocks=AMZN,AAPL,GOOG,TSLA
+
+#Stock of interest
+target.stock=AAPL
+```
+
 #### 1. ALPACA API key configuration
 
 1. Create a file named `application.properties` in the `src/main/resources` directory.

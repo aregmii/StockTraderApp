@@ -1,7 +1,7 @@
 package org.example.stocktrader.validator.impl;
 
 import net.jacobpeterson.alpaca.model.endpoint.marketdata.stock.realtime.quote.StockQuoteMessage;
-import org.example.stocktrader.exception.ValidationException;
+import org.example.stocktrader.exception.StreamInputValidationException;
 import org.example.stocktrader.validator.StreamInputMessageValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +12,9 @@ public class QuoteStreamInputMessageValidator implements StreamInputMessageValid
     private static final Logger logger = LoggerFactory.getLogger(QuoteStreamInputMessageValidator.class);
 
     @Override
-    public void validate(final StockQuoteMessage message) throws ValidationException {
+    public boolean validate(final StockQuoteMessage message) {
         // Validation logic
         logger.info("Successful validation of StockQuoteMessage: {} ", message);
+        return true;
     }
 }

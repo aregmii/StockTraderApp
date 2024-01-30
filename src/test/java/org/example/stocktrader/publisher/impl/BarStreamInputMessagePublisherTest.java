@@ -1,8 +1,8 @@
-package org.example.stocktrader.handler.impl;
+package org.example.stocktrader.publisher.impl;
 
 import net.jacobpeterson.alpaca.model.endpoint.marketdata.common.realtime.enums.MarketDataMessageType;
 import net.jacobpeterson.alpaca.model.endpoint.marketdata.stock.realtime.bar.StockBarMessage;
-import org.example.stocktrader.manager.BarMessageQueueManager;
+import org.example.stocktrader.queuemanager.BarMessageQueueManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -14,17 +14,17 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-public class BarStreamInputMessageHandlerTest {
+public class BarStreamInputMessagePublisherTest {
 
     @Mock
     private BarMessageQueueManager barMessageQueueManager;
 
-    private BarStreamInputMessageHandler handler;
+    private BarStreamInputMessagePublisher handler;
 
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        handler = new BarStreamInputMessageHandler(barMessageQueueManager);
+        handler = new BarStreamInputMessagePublisher(barMessageQueueManager);
     }
 
     @Test
@@ -39,7 +39,7 @@ public class BarStreamInputMessageHandlerTest {
 
         handler.handleStreamInput(msg, Instant.now());
 
-        verify(barMessageQueueManager).publish(msg);
+        verify(barMessageQueueManager).execute(msg);
     }
 
     @Test
@@ -49,11 +49,11 @@ public class BarStreamInputMessageHandlerTest {
 
         // Tell that when 'publish' method of 'barMessageQueueManager' gets called with any 'StockBarMessage' instance
         // Then throw a new RuntimeException
-        doThrow(exception).when(barMessageQueueManager).publish(any(StockBarMessage.class));
+        doThrow(exception).when(barMessageQueueManager).execute(any(StockBarMessage.class));
 
         // We expect 'handleStreamInput' method to complete without throwing exception (because it catches them)
         handler.handleStreamInput(msg, Instant.now());
 
         // And we verify that 'publish' method of 'barMessageQueueManager' indeed gets called as a result
-        verify(barMessageQueueManager).publish(msg);
+        verify(barMessageQueueManager).execute(msg);
     }}

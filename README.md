@@ -117,7 +117,7 @@ mvn clean
 - Proper metric/insights based alarm and warning signals.
 - DLQ - Lambda - alarms and on call involvement (leverage internal LLM for timely action).
 
-### Error Handling 
+### Next Steps -  
 1. Upgrade dependencies to their recommended versions and implement spotbugs, checkstyle etc.
 2. Refactor code for consistency in testing libraries and practices.
 3. Robust error handling - one component might want to return a custom error message to the other.

@@ -6,5 +6,5 @@ import java.util.Queue;
 public interface QueueMovingAverageCalculator<T>{
 
     //calculate moving average
-    double calculateMovingAverage(Map<String, Queue<T>> data);
+    double calculateMovingAverage(final Map<String, Queue<T>> data);
 }

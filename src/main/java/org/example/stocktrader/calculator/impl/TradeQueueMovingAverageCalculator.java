@@ -10,7 +10,7 @@ public class TradeQueueMovingAverageCalculator implements QueueMovingAverageCalc
     public static Map<MarketDataMessageType, TradeQueueMovingAverageCalculator> validators = new HashMap<>();
 
     @Override
-    public double calculateMovingAverage(Map data) {
+    public double calculateMovingAverage(final Map data) {
         return 0;
     }
 }

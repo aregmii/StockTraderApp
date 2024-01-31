@@ -1,7 +1,6 @@
 package org.example.stocktrader.calculator.impl;
 
 import net.jacobpeterson.alpaca.model.endpoint.marketdata.stock.realtime.bar.StockBarMessage;
-import org.example.stocktrader.calculator.QueueMovingAverageCalculator;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;

@@ -10,8 +10,7 @@ import java.util.List;
 
 public class StockDataFacadeTest {
 
-    private StockDataFacade stockDataFacade;
-    private StockDataStreamListener listener = Mockito.mock(StockDataStreamListener.class);
+    private final StockDataStreamListener listener = Mockito.mock(StockDataStreamListener.class);
 
     /**
      * This test case tests the startStreaming method of StockDataFacade class.
@@ -19,7 +18,7 @@ public class StockDataFacadeTest {
     @Test
     public void testStartStreaming() {
         // Initialize the object to be tested with mock dependencies
-        stockDataFacade = new StockDataFacade(listener);
+        StockDataFacade stockDataFacade = new StockDataFacade(listener);
         List<String> symbols = Arrays.asList("AAPL", "GOOGL", "MSFT");
 
         // Call the method to be tested

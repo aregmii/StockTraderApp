@@ -13,20 +13,20 @@ import java.util.Arrays;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
-public class StockDataStreamConnectorTest {
+public class StockStreamDataSubscriberTest {
     @Mock
     private AlpacaAPI alpacaAPI;
 
     @Mock
     private MarketDataListener marketDataListener;
 
-    private StockDataStreamConnector stockDataStreamConnector;
+    private StockStreamDataSubscriber stockStreamDataSubscriber;
 
 
     @BeforeEach
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        stockDataStreamConnector = new StockDataStreamConnector(alpacaAPI, 1);
+        stockStreamDataSubscriber = new StockStreamDataSubscriber(alpacaAPI, 1);
     }
 
     /**
@@ -37,7 +37,7 @@ public class StockDataStreamConnectorTest {
         try {
             String expectedSymbol = "AAPL";
 
-            stockDataStreamConnector.subscribe(marketDataListener, Arrays.asList(expectedSymbol));
+            stockStreamDataSubscriber.subscribe(marketDataListener, Arrays.asList(expectedSymbol));
 
             verify(alpacaAPI.stockMarketDataStreaming()).subscribe(eq(Arrays.asList(expectedSymbol)), eq(Arrays.asList(expectedSymbol)), eq(Arrays.asList(expectedSymbol)));
         } catch (RuntimeException e) {
@@ -51,7 +51,7 @@ public class StockDataStreamConnectorTest {
     @Test
     public void keepWebSocketOpen() {
         try {
-            stockDataStreamConnector.keepWebSocketOpen();
+            stockStreamDataSubscriber.keepWebSocketOpen();
             verify(alpacaAPI.stockMarketDataStreaming()).disconnect();
         } catch (Exception e) {
             e.printStackTrace();

@@ -13,13 +13,13 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 @Component
-public class StockDataStreamConnector {
-    private static final Logger logger = LoggerFactory.getLogger(StockDataStreamConnector.class);
+public class StockStreamDataSubscriber {
+    private static final Logger logger = LoggerFactory.getLogger(StockStreamDataSubscriber.class);
     private final AlpacaAPI alpacaAPI;
 
     @Autowired
-    public StockDataStreamConnector(final AlpacaAPI alpacaAPI,
-                                    @Value("${alpaca.websocket.threadpool.size}") final int threadPoolSize) {
+    public StockStreamDataSubscriber(final AlpacaAPI alpacaAPI,
+                                     @Value("${alpaca.websocket.threadpool.size}") final int threadPoolSize) {
         this.alpacaAPI = alpacaAPI;
         logger.info("AlpacaWebSocketClient initialized with thread-pool size: {}", threadPoolSize);
     }

@@ -3,14 +3,13 @@ package org.example.stocktrader.calculator.impl;
 
 import net.jacobpeterson.alpaca.model.endpoint.marketdata.stock.realtime.bar.StockBarMessage;
 import org.example.stocktrader.calculator.QueueMovingAverageCalculator;
-import org.springframework.stereotype.Component;
 
 import java.util.Map;
 import java.util.Queue;
 
 public class BarQueueMovingAverageCalculator implements QueueMovingAverageCalculator<StockBarMessage> {
     @Override
-    public double calculateMovingAverage(Map<String, Queue<StockBarMessage>> barMessagesMap) {
+    public double calculateMovingAverage(final Map<String, Queue<StockBarMessage>> barMessagesMap) {
         int count = 0;
         double sum = 0.0;
 

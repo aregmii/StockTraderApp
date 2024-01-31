@@ -84,7 +84,6 @@ public class StockDataStreamListenerTest {
         stockDataStreamListener.connectAndSubscribe(Collections.singletonList("APPL"));
 
         verify(clock, times(1)).getIsOpen();
-        //verify(barStreamInputMessageHandler, atLeastOnce()).handleStreamInput(any(StockBarMessage.class), any(Instant.class));
     }
 
     private void mockClock(boolean isOpen) throws Exception {

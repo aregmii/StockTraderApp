@@ -1,6 +1,7 @@
 package org.example.stocktrader.queuemanager;
 
 import net.jacobpeterson.alpaca.model.endpoint.marketdata.common.realtime.bar.BarMessage;
+import net.jacobpeterson.alpaca.model.endpoint.marketdata.common.realtime.enums.MarketDataMessageType;
 import org.example.stocktrader.calculator.QueueMovingAverageCalculator;
 import org.example.stocktrader.calculator.QueueMovingAverageCalculatorRegistry;
 import org.slf4j.Logger;
@@ -121,7 +122,7 @@ public class BarMessageQueueManager {
 
     private double calculateAverage(Map<String, Queue<BarMessage>> barMessagesMap) {
         QueueMovingAverageCalculator calculator =
-                QueueMovingAverageCalculatorRegistry.validators.get(barMessagesMap);
+                QueueMovingAverageCalculatorRegistry.validators.get(MarketDataMessageType.BAR);
         if (calculator == null) {
             throw new IllegalStateException("No calculator registered for messageType: barMessage");
         }

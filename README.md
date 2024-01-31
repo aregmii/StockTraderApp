@@ -104,9 +104,18 @@ java -jar target/<project-name>.jar
 
 #If you need to clean the project and remove any generated files, you can use the following command:
 mvn clean
+```
 
+### Error Handling 
 
+![Error Handling](docs/pic.jpeg)
 
-
+1. Preventitive measures: Unit test, integration test, robust logging for early triage, extensive validations, specific retry configurations, load testing and canaries, robust rate limiting.
+2. User Registration - DLQ -> Trigger lambda for ticketing -> on-call intervention. 
+3. Stream handling:
+- Application level and business use-case relevant retries.
+- Custom retry policy for inter-service communication. 
+- Proper metric/insights based alarm and warning signals.
+- DLQ - Lambda - alarms and on call involvement (leverage internal LLM for timely action).
 
 

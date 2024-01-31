@@ -124,3 +124,7 @@ mvn clean
 4. Implementation of DLQ mechanisms. 
 5. Implement multithreaded handling for input stream message handlers and complete implementation of unimplemented classes to make the structure more modular.
 
+### Application Flow Sequence Diagram
+
+![Error Handling](docs/applicationFlow.png)
+

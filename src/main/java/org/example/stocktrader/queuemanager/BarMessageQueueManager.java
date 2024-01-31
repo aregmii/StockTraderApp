@@ -115,8 +115,8 @@ public class BarMessageQueueManager {
         Optional<BarMessage> firstMessageInTargetQueue = extractEarliestQueueMessage(BAR_MESSAGES_IN_MEMORY_MAP_TARGET);
 
         //averages of both queues should be greater than the first entry in the queue
-        if (firstMessageInAvgQueue.isPresent() && firstMessageInTargetQueue.isPresent() &&
-                overallMovingAverage > firstMessageInAvgQueue.get().getClose() &&
+        if (firstMessageInAvgQueue.isPresent() && firstMessageInTargetQueue.isPresent()
+                && overallMovingAverage > firstMessageInAvgQueue.get().getClose() &&
                 targetStockMovingAvg > firstMessageInTargetQueue.get().getClose()
         ) {
             logger.info("BUY CONDITION MET: Overall Average: {}, targetStock: {} Average: {}", overallMovingAverage, targetStock, targetStockMovingAvg);

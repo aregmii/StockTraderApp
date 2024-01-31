@@ -14,7 +14,7 @@ public class QuoteStreamInputMessageValidator implements StreamInputMessageValid
     @Override
     public boolean validate(final StockQuoteMessage message) {
         // Validation logic
-        logger.info("Successful validation of StockQuoteMessage: {} ", message);
+        logger.debug("Successful validation of StockQuoteMessage: {} ", message);
         return true;
     }
 }

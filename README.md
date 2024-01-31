@@ -126,5 +126,5 @@ mvn clean
 
 ### Application Flow Sequence Diagram
 
-![Error Handling](docs/applicationFlow.png)
+![Sequence Diagram](docs/applicationFlow.png)
 

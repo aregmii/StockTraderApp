@@ -13,7 +13,7 @@ public class TradeStreamInputMessageValidator implements StreamInputMessageValid
 
     @Override
     public boolean validate(final StockTradeMessage message) {
-        logger.info("Successful validation of StockTradeMessage: {} ", message);
+        logger.debug("Successful validation of StockTradeMessage: {} ", message);
         return true;
     }
 }

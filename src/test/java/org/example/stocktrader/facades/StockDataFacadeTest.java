@@ -3,7 +3,6 @@ package org.example.stocktrader.facades;
 import org.example.stocktrader.listener.StockDataStreamListener;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
 import java.util.List;

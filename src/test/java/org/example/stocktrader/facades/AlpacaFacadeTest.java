@@ -7,7 +7,7 @@ import org.mockito.Mockito;
 import java.util.Arrays;
 import java.util.List;
 
-public class StockDataFacadeTest {
+public class AlpacaFacadeTest {
 
     private final StockDataStreamListener listener = Mockito.mock(StockDataStreamListener.class);
 
@@ -17,11 +17,11 @@ public class StockDataFacadeTest {
     @Test
     public void testStartStreaming() {
         // Initialize the object to be tested with mock dependencies
-        StockDataFacade stockDataFacade = new StockDataFacade(listener);
+        AlpacaFacade alpacaFacade = new AlpacaFacade(listener);
         List<String> symbols = Arrays.asList("AAPL", "GOOGL", "MSFT");
 
         // Call the method to be tested
-        stockDataFacade.startStreaming(symbols);
+        alpacaFacade.startStreaming(symbols);
 
         // Verify the interaction with the listener
         Mockito.verify(listener, Mockito.times(1)).connectAndSubscribe(symbols);

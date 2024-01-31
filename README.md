@@ -1,7 +1,6 @@
-# Project Name
+# Stock Trader App
 
-Real time basic stock trader app built utilizing Alpaca stream APIs -
-//TODO - add details
+Real time basic stock trader app built utilizing Alpaca stream APIs and this SDK: https://github.com/Petersoj/alpaca-java
 
 ## Introduction
 
@@ -118,4 +117,10 @@ mvn clean
 - Proper metric/insights based alarm and warning signals.
 - DLQ - Lambda - alarms and on call involvement (leverage internal LLM for timely action).
 
+### Error Handling 
+1. Upgrade dependencies to their recommended versions and implement spotbugs, checkstyle etc.
+2. Refactor code for consistency in testing libraries and practices.
+3. Robust error handling - one component might want to return a custom error message to the other.
+4. Implementation of DLQ mechanisms. 
+5. Implement multithreaded handling for input stream message handlers and complete implementation of unimplemented classes to make the structure more modular.
 

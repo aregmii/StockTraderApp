@@ -13,6 +13,11 @@ import org.springframework.stereotype.Component;
 import java.time.ZonedDateTime;
 import java.util.*;
 
+/**
+ * The BarMessageQueueManager class is responsible for managing queues of BarMessage objects.
+ * It provides methods to publish bar messages to the appropriate queues, cleanup expired messages,
+ * and check a buy condition based on the moving averages of the queues.
+ */
 @Component
 public class BarMessageQueueManager {
     private static final Logger logger = LoggerFactory.getLogger(BarMessageQueueManager.class);

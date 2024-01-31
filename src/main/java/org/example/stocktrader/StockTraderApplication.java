@@ -1,6 +1,6 @@
 package org.example.stocktrader;
 
-import org.example.stocktrader.facades.StockDataFacade;
+import org.example.stocktrader.facades.AlpacaFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
@@ -14,14 +14,14 @@ import java.util.List;
 @SpringBootApplication
 @EnableAsync
 public class StockTraderApplication {
-    private final StockDataFacade stockDataFacade;
+    private final AlpacaFacade alpacaFacade;
 
     private final List<String> subscriptionStockList;
 
     @Autowired
-    public StockTraderApplication(final StockDataFacade stockDataFacade,
+    public StockTraderApplication(final AlpacaFacade alpacaFacade,
                                   final @Value("${subscription.stocks}") String stocks) {
-        this.stockDataFacade = stockDataFacade;
+        this.alpacaFacade = alpacaFacade;
         this.subscriptionStockList = Arrays.asList(stocks.split(","));
     }
 
@@ -32,6 +32,6 @@ public class StockTraderApplication {
     @PostConstruct
     public void init() {
         System.out.println("StockTrader Application Started.");
-        stockDataFacade.startStreaming(subscriptionStockList);
+        alpacaFacade.startStreaming(subscriptionStockList);
     }
 }

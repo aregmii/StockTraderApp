@@ -9,6 +9,10 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The QueueMovingAverageCalculatorRegistry class is responsible for registering different types of
+ * QueueMovingAverageCalculator implementations based on MarketDataMessageType.
+ */
 @Component
 public class QueueMovingAverageCalculatorRegistry {
     public static Map<MarketDataMessageType, QueueMovingAverageCalculator> validators = new HashMap<>();

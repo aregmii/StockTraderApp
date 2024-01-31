@@ -12,6 +12,9 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * This class is responsible for subscribing to stock stream data and keeping the WebSocket connection open.
+ */
 @Component
 public class StockStreamDataSubscriber {
     private static final Logger logger = LoggerFactory.getLogger(StockStreamDataSubscriber.class);

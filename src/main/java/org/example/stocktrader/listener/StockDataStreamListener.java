@@ -21,6 +21,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.*;
 
+/**
+ * The StockDataStreamListener class is responsible for connecting to data streams from Alpaca API
+ * and handling the received market data messages.
+ */
 @Component
 public class StockDataStreamListener {
     private static final Logger logger = LoggerFactory.getLogger(StockDataStreamListener.class);

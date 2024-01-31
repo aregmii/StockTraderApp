@@ -7,12 +7,12 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class StockDataFacade {
+public class AlpacaFacade {
 
     private final StockDataStreamListener stockDataStreamListener;
 
     @Autowired
-    public StockDataFacade(final StockDataStreamListener stockDataStreamListener) {
+    public AlpacaFacade(final StockDataStreamListener stockDataStreamListener) {
         this.stockDataStreamListener = stockDataStreamListener;
     }
 

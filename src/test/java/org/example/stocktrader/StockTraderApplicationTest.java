@@ -1,6 +1,6 @@
 package org.example.stocktrader;
 
-import org.example.stocktrader.facades.StockDataFacade;
+import org.example.stocktrader.facades.AlpacaFacade;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 public class StockTraderApplicationTest {
 
     @Mock
-    private StockDataFacade stockDataFacadeMock;
+    private AlpacaFacade alpacaFacadeMock;
 
     @BeforeEach
     public void setUp() {
@@ -22,10 +22,10 @@ public class StockTraderApplicationTest {
 
     @Test
     public void testInit() {
-        StockTraderApplication stockTraderApplication = new StockTraderApplication(stockDataFacadeMock, "AAPL");
-        doNothing().when(stockDataFacadeMock).startStreaming(anyList());
+        StockTraderApplication stockTraderApplication = new StockTraderApplication(alpacaFacadeMock, "AAPL");
+        doNothing().when(alpacaFacadeMock).startStreaming(anyList());
         stockTraderApplication.init();
 
-        verify(stockDataFacadeMock, times(1)).startStreaming(anyList());
+        verify(alpacaFacadeMock, times(1)).startStreaming(anyList());
     }
 }

@@ -7,6 +7,10 @@ import org.example.stocktrader.calculator.QueueMovingAverageCalculator;
 import java.util.Map;
 import java.util.Queue;
 
+/**
+ * The BarQueueMovingAverageCalculator class implements the QueueMovingAverageCalculator interface
+ * and provides a method to calculate the moving average of a collection of StockBarMessages.
+ */
 public class BarQueueMovingAverageCalculator implements QueueMovingAverageCalculator<StockBarMessage> {
     @Override
     public double calculateMovingAverage(final Map<String, Queue<StockBarMessage>> barMessagesMap) {
